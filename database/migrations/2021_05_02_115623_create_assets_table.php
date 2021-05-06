@@ -17,6 +17,8 @@ class CreateAssetsTable extends Migration
             $table->id();
             $table->integer('parent_asset_id')->nullable();
             $table->integer('registered_person_id');
+            $table->string('administrator', 255);
+            $table->string('place', 255);
             $table->string('asset_code', 255);
             $table->string('asset_name', 255);
             $table->string('acquisition_date', 15);
