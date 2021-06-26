@@ -5,12 +5,22 @@ namespace App\Http\Controllers\App;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Asset;
+use Illuminate\Support\Facades\DB;
+// use Illuminate\Support\Facades\Auth;
 
 class AssetController extends Controller
 {
     public function showAssetList()
-    {
-        return view('app.list');
+    {   
+        $user = auth()->user();
+        $data = [
+            'id' => $user['id'],
+            'name' => $user['name'],
+            'room' => $user['room'],
+            'email' => $user['email'],
+        ];
+
+        return view('app.list', $data);
     }
 
     public function showAssetRegisterForm()
