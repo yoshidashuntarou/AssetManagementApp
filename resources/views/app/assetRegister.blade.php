@@ -1,3 +1,4 @@
+<a href="/list">一覧に戻る</a>
 <form method="post" action="/asset/register/store">
     @csrf
     <label for="administrator">担当者</label>
