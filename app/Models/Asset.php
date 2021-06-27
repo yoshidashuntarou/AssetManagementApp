@@ -10,6 +10,8 @@ class Asset extends Model
     use HasFactory;
 
     protected $fillable = [
+        'parent_asset_id',
+        'registered_person_id',
         'administrator',
         'place',
         'asset_code',
