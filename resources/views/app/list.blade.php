@@ -9,8 +9,15 @@
         @csrf
     </form>
 </div>
-id = {{$id}} <br>
-name = {{$name}} <br>
-room = {{$room}} <br>
-email = {{$email}} <br>
 <a href="/asset/register">資産を登録</a>
+
+<h3>資産一覧</h3>
+@foreach($assets as $asset)
+<div>
+    <a href="/asset/{{ $asset->id }}">
+    <p>{{ $asset->id }} {{ $asset->asset_name }} {{ $asset->administrator }} {{ $asset->operational_verification }} {{ $asset->acquisition_date }}</p>
+    </a>
+</div>
+
+@endforeach
+
