@@ -5,6 +5,7 @@ namespace App\Http\Controllers\App;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Asset;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 // use Illuminate\Support\Facades\Auth;
 
@@ -28,7 +29,7 @@ class AssetController extends Controller
 
         for ($i = 1; $i <= Asset::count(); $i++) {
             $asset = Asset::find($i);
-            if($asset->parent_asset_id != null) {
+            if(optional($asset)->parent_asset_id != null) {
                 $parentIdArray[] = $asset->parent_asset_id;
             }
         }
@@ -61,7 +62,9 @@ class AssetController extends Controller
 
     public function showAssetRegisterForm()
     {
+
         return view('app.assetRegister');
+        // return redirect(route('assetRegister'));
     }
 
 
@@ -87,7 +90,6 @@ class AssetController extends Controller
         if (in_array($asset_id, $parentIdArray)) {
             return redirect('list');
         }
-
 
         $assetsArray = array();
         $assetsArray[] = $choseAsset;
@@ -152,6 +154,7 @@ class AssetController extends Controller
             'operational_verification' => 'required|max:15'
         ]);
 
+
         $request['registered_person_id'] = auth()->id();
         $request['parent_asset_id'] = $asset_id;
 
@@ -162,4 +165,31 @@ class AssetController extends Controller
             'asset_id' => Asset::count(),
         ]));
     }
+
+
+    public function showUserEdit()
+    {
+        $user = auth()->user();
+
+        return view('app.userEdit', ['user' => $user]);
+    }
+
+
+    public function userEdit(Request $request)
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'room' => ['max:255'],
+        ]);
+
+        $user = auth()->user();
+        $user->name = $request->name;
+        $user->room = $request->room;
+        $user->save();
+
+        return redirect('user');
+    }
+
+    
+
 }
