@@ -22,28 +22,55 @@ class AssetController extends Controller
         $this->middleware('auth');
     }
 
-    public function showAssetList()
+    public function showAssetList(Request $request)
     {   
-        $parentIdArray = array(); //子を持つ全てのデータのidを取得
-        $assetsArray = array(); //最新の子のデータをまとめる
 
-        for ($i = 1; $i <= Asset::count(); $i++) {
+        // dd($request->key_word);
+
+        $haveChildrenAssetIdArray = array(); //子を持つ全てのデータのidを取得
+        $parentAssetsArray = array(); //最高の親データをまとめる
+
+
+        //子を持つ全ての親データを取得
+        $lastAsset = Asset::orderBy('id', 'desc')->take(1)->first(); 
+        if (!empty($lastAsset)) {
+            $lastAssetId = $lastAsset->id;
+        } else {
+            $lastAssetId = 0;
+        }
+
+        for ($i = 1; $i <= $lastAssetId; $i++) {
             $asset = Asset::find($i);
+            // dd(optional($asset)->parent_asset_id);
             if(optional($asset)->parent_asset_id != null) {
-                $parentIdArray[] = $asset->parent_asset_id;
+                $haveChildrenAssetIdArray[] = $asset->parent_asset_id;
             }
         }
 
-        for ($i = 1; $i <= Asset::count(); $i++) {
-            for ($parentIdCount = 1; $parentIdCount <= count($parentIdArray); $parentIdCount++) {
-                if(in_array($i, $parentIdArray)) {
+        // dd($haveChildrenAssetIdArray);
+
+        //上記で取得した親データに親がいなかったら$assetsArray[]に追加
+        for ($i = 1; $i <= $lastAssetId; $i++) {
+            for ($parentIdCount = 1; $parentIdCount <= count($haveChildrenAssetIdArray); $parentIdCount++) {
+                if(in_array($i, $haveChildrenAssetIdArray)) {
                     // dd($parentIdArray);
                     goto firstLoop;
                 }
             }
-            $assetsArray[] = Asset::find($i);
+            $parentAssetsArray[] = Asset::find($i);
             firstLoop:
         }
+
+
+        if (!empty($request->key_word)) {
+            unset($parentAssetsArray[0]);
+        }
+
+
+
+
+
+
 
 
         //ユーザー情報の取得
@@ -54,17 +81,17 @@ class AssetController extends Controller
             'name' => $user['name'],
             'room' => $user['room'],
             'email' => $user['email'],
-            'assets' => $assetsArray
+            'assets' => $parentAssetsArray
         ];
+
+        // dd($assetsArray);
         return view('app.list', $data);
     }
 
 
     public function showAssetRegisterForm()
     {
-
         return view('app.assetRegister');
-        // return redirect(route('assetRegister'));
     }
 
 
@@ -77,12 +104,19 @@ class AssetController extends Controller
             return redirect('list');
         }
 
-        //子を持つ全てのデータを取得
+        //子を持つ全ての親データを取得
+        $lastAsset = Asset::orderBy('id', 'desc')->take(1)->first(); 
+        if (!empty($lastAsset)) {
+            $lastAssetId = $lastAsset->id;
+        } else {
+            $lastAssetId = 0;
+        }
+
         $parentIdArray = array(); 
-        for ($i = 1; $i <= Asset::count(); $i++) {
+        for ($i = 1; $i <= $lastAssetId; $i++) {
             $asset = Asset::find($i);
-            if($asset->parent_asset_id != null) {
-                $parentIdArray[] = $asset->parent_asset_id;
+            if(optional($asset)->parent_asset_id != null) {
+                $parentIdArray[] = optional($asset)->parent_asset_id;
             }
         }
 
@@ -101,7 +135,6 @@ class AssetController extends Controller
             $parentAsset = Asset::find($parentAsset->parent_asset_id);
         }
 
-
         return view('app.assetDetail', ['assets' => $assetsArray]);
     }
 
@@ -119,7 +152,13 @@ class AssetController extends Controller
             'operational_verification' => 'required|max:15'
         ]);
 
-        $request['registered_person_id'] = auth()->id();
+        //変更後のコード（最高の親のparent_asset_idを自分のidにする）
+        // $lastId = Asset::all()->last()->id + 1;
+        // $request['parent_asset_id'] = $lastId;
+
+        $request['registered_user_id'] = auth()->id();
+
+
 
         $registeringAsset = new Asset;
         $registeringAsset->create($request->all());
@@ -155,41 +194,94 @@ class AssetController extends Controller
         ]);
 
 
-        $request['registered_person_id'] = auth()->id();
-        $request['parent_asset_id'] = $asset_id;
+        $parentId = Asset::find($asset_id)->parent_asset_id;
+        // dd($parentId);
+
+        if($parentId == null) {
+            $parentId = $asset_id;
+        }
+
+        $request['registered_user_id'] = auth()->id();
+        $request['parent_asset_id'] = $asset_id; //ここを$parentIdにする
 
         $registeringAsset = new Asset;
         $registeringAsset->create($request->all());
 
+        $lastAsset = Asset::orderBy('id', 'desc')->take(1)->first(); 
+        if (!empty($lastAsset)) {
+            $lastAssetId = $lastAsset->id;
+        } else {
+            $lastAssetId = 0;
+        }
+
+
         return redirect(route('assetDetail', [
-            'asset_id' => Asset::count(),
+            'asset_id' => $lastAssetId,
         ]));
     }
 
 
-    public function showUserEdit()
-    {
-        $user = auth()->user();
-
-        return view('app.userEdit', ['user' => $user]);
-    }
-
-
-    public function userEdit(Request $request)
-    {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'room' => ['max:255'],
-        ]);
-
-        $user = auth()->user();
-        $user->name = $request->name;
-        $user->room = $request->room;
-        $user->save();
-
-        return redirect('user');
-    }
-
     
+
+    public function assetDelete($asset_id)
+    {
+        $haveChildrenAssetIdArray = array(); //子を持つ全てのデータのidを取得
+        $parentAssetsIdArray = array(); //最高の親データをまとめる
+
+        //子を持つ全ての親データを取得
+        $lastAsset = Asset::orderBy('id', 'desc')->take(1)->first(); 
+        if (!empty($lastAsset)) {
+            $lastAssetId = $lastAsset->id;
+        } else {
+            $lastAssetId = 0;
+        }
+
+
+        for ($i = 1; $i <= $lastAssetId; $i++) {
+            $asset = Asset::find($i);
+            if(optional($asset)->parent_asset_id != null) {
+                $haveChildrenAssetIdArray[] = $asset->parent_asset_id;
+            }
+        }
+
+        //上記で取得した親データに親がいなかったら$parentAssetsArray[]に追加
+        for ($i = 1; $i <= $lastAssetId; $i++) {
+            for ($parentIdCount = 1; $parentIdCount <= count($haveChildrenAssetIdArray); $parentIdCount++) {
+                if(in_array($i, $haveChildrenAssetIdArray)) {
+                    // dd($parentIdArray);
+                    goto firstLoop;
+                }
+            }
+            $asset = Asset::find($i);
+            $parentAssetsIdArray[] = optional($asset)->id;
+            firstLoop:
+        }
+
+        //子も持つデータをurlパラメータに指定されたらlistにリダイレクトさせる
+        if (!in_array($asset_id, $parentAssetsIdArray)) {
+            return redirect('list');
+        }
+
+
+        $choseAsset = Asset::find($asset_id); //指定されたデータの取得     
+
+        $deleteAssetsArray[] = $choseAsset;
+
+
+        $parentAsset = Asset::find($choseAsset->parent_asset_id);
+        while ($parentAsset != null) {
+            $deleteAssetsArray[] = $parentAsset;
+            $parentAsset = Asset::find($parentAsset->parent_asset_id);
+        }
+
+
+        for ($i = 0; $i < count($deleteAssetsArray); $i++) {
+            // $deleteAssetId[] = $assetsArray[$i]->id;
+            Asset::where('id', $deleteAssetsArray[$i]->id)->delete();
+        }
+
+        return redirect('list');
+
+    }
 
 }
