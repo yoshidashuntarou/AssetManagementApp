@@ -16,7 +16,7 @@ class CreateAssetsTable extends Migration
         Schema::create('assets', function (Blueprint $table) {
             $table->id();
             $table->integer('parent_asset_id')->nullable();
-            $table->integer('registered_person_id');
+            $table->integer('registered_user_id');
             $table->string('administrator', 255);
             $table->string('place', 255);
             $table->string('asset_code', 255);
