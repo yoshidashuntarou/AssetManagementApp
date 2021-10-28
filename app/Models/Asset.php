@@ -11,8 +11,9 @@ class Asset extends Model
 
     protected $fillable = [
         'parent_asset_id',
-        'registered_person_id',
-        'administrator',
+        'registered_user_id',
+        'asset_owner',
+        'asset_user',
         'place',
         'asset_code',
         'asset_name',
