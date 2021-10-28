@@ -14,10 +14,17 @@
                         </div>
                     @endif
 
-                    {{ __('You are logged in!') }}
+                    <!-- {{ __('You are logged in!') }} -->
                 </div>
             </div>
         </div>
     </div>
+</div>
+
+<div class="contents">
+    <div class="assets-wrapper">
+    <!-- ここに資産一覧 -->
+    </div> 
+
 </div>
 @endsection

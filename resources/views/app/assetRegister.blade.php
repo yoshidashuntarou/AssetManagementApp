@@ -1,8 +1,12 @@
 <a href="/list">一覧に戻る</a>
 <form method="post" action="/asset/register/store">
     @csrf
-    <label for="administrator">担当者</label>
-    <input name="administrator"type="text">
+    <label for="asset_owner">所有者</label>
+    <input name="asset_owner"type="text">
+    <br>
+
+    <label for="asset_user">使用者</label>
+    <input name="asset_user"type="text">
     <br>
 
     <label for="place">場所</label>

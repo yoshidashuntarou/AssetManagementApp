@@ -1,7 +1,11 @@
 <form method="post" action="/asset/{{ $asset_id }}/edit/store">
     @csrf
-    <label for="administrator">担当者</label>
-    <input id="administrator" name="administrator" type="text" value="{{ $asset->administrator }}" oninput="validate()">
+    <label for="asset_owner">所有者</label>
+    <input id="asset_owner" name="asset_owner" type="text" value="{{ $asset->asset_owner }}" oninput="validate()">
+    <br>
+
+    <label for="asset_user">担当者</label>
+    <input id="asset_user" name="asset_user" type="text" value="{{ $asset->asset_user }}" oninput="validate()">
     <br>
 
     <label for="place">場所</label>
@@ -41,7 +45,8 @@
         
         document.getElementById('submitButton').disabled = true;
 
-        const administrator = document.getElementById('administrator').value;
+        const asset_owner = document.getElementById('asset_owner').value;
+        const asset_user = document.getElementById('asset_user').value;
         const place = document.getElementById('place').value;
         const asset_code = document.getElementById('asset_code').value;
         const asset_name = document.getElementById('asset_name').value;
@@ -59,7 +64,8 @@
         }
 
         function validate() {
-            let administrator2 = document.getElementById('administrator').value;
+            let asset_owner2 = document.getElementById('asset_owner').value;
+            let asset_user2 = document.getElementById('asset_user').value;
             let place2 = document.getElementById('place').value;
             let asset_code2 = document.getElementById('asset_code').value;
             let asset_name2 = document.getElementById('asset_name').value;
@@ -74,7 +80,7 @@
                 }
             }
 
-            if (administrator != administrator2 || place != place2 || asset_code != asset_code2 || asset_name != asset_name2 || acquisition_date != acquisition_date2 || model != model2 || number_of_assets != number_of_assets2 || checkedValue != checkedValue2) {
+            if (asset_owner != asset_owner2 || asset_user != asset_user2 || asset_code != asset_code2 || asset_name != asset_name2 || acquisition_date != acquisition_date2 || model != model2 || number_of_assets != number_of_assets2 || checkedValue != checkedValue2) {
                 document.getElementById('submitButton').disabled = false;
             } else {
                 document.getElementById('submitButton').disabled = true;

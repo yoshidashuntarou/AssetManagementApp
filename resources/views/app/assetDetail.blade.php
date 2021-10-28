@@ -14,7 +14,7 @@
 
 <h1>資産の詳細です</h1><br>
 
-<h3>{{ $assets[0]->id }} {{ $assets[0]->administrator }} {{ $assets[0]->place }} {{ $assets[0]->asset_code }} {{ $assets[0]->asset_name }} {{ $assets[0]->acquisition_date }} {{ $assets[0]->model }} {{ $assets[0]->number_of_assets }} {{ $assets[0]->operational_verification }} {{ $assets[0]->created_at }}</h3>
+<h3>{{ $assets[0]->id }} {{ $assets[0]->asset_owner }} {{ $assets[0]->asset_user }} {{ $assets[0]->place }} {{ $assets[0]->asset_code }} {{ $assets[0]->asset_name }} {{ $assets[0]->acquisition_date }} {{ $assets[0]->model }} {{ $assets[0]->number_of_assets }} {{ $assets[0]->operational_verification }} {{ $assets[0]->created_at }}</h3>
 <br>
 <a href="/asset/{{ $assets[0]->id }}/edit">編集</a>
 <a href="/asset/{{ $assets[0]->id }}/delete/store">削除</a>
@@ -24,7 +24,11 @@
 <br>
 
 @foreach($assets as $asset)
-    {{ $asset->id }} {{ $asset->administrator }} {{ $asset->place }} {{ $asset->asset_code }} {{ $asset->asset_name }} {{ $asset->acquisition_date }} {{ $asset->model }} {{ $asset->number_of_assets }} {{ $asset->operational_verification }} {{ $asset->created_at }}
+    {{ $asset->id }} {{ $asset->asset_owner }} {{ $asset->asset_user }} {{ $asset->place }} {{ $asset->asset_code }} {{ $asset->asset_name }} {{ $asset->acquisition_date }} {{ $asset->model }} {{ $asset->number_of_assets }} {{ $asset->operational_verification }} {{ $asset->created_at }}
     <br>
 @endforeach
+
+<script>
+    // window.confirm("これが確認ダイアログです。");
+</script>
 

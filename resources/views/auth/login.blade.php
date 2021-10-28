@@ -10,7 +10,7 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">{{ __('Login') }}</div>
-<h1>ぬぬぬぬぬぬぬなあ</h1>
+<h1>login.blede.php</h1>
                 <div class="card-body">
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
