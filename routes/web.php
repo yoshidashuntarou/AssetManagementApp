@@ -19,6 +19,8 @@ Route::get('/', function () {
 
 Auth::routes();
 
+Route::get('/search', [App\Http\Controllers\App\AssetController::class, 'showAssetSearch']);
+Route::post('/list/search', [App\Http\Controllers\App\AssetController::class, 'assetSearch']);
 Route::get('/list/{key_word?}', [App\Http\Controllers\App\AssetController::class, 'showAssetList'])->name('list');
 Route::get('/asset/register', [App\Http\Controllers\App\AssetController::class, 'showAssetRegisterForm'])->name('assetRegister');
 Route::post('/asset/register/store', [App\Http\Controllers\App\AssetController::class, 'assetRegister']);
