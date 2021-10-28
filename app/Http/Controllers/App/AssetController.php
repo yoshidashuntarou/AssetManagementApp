@@ -66,13 +66,6 @@ class AssetController extends Controller
             unset($parentAssetsArray[0]);
         }
 
-
-
-
-
-
-
-
         //ユーザー情報の取得
         $user = auth()->user();
 
@@ -84,7 +77,6 @@ class AssetController extends Controller
             'assets' => $parentAssetsArray
         ];
 
-        // dd($assetsArray);
         return view('app.list', $data);
     }
 
@@ -142,7 +134,8 @@ class AssetController extends Controller
     public function assetRegister(Request $request)
     {
         $request->validate([
-            'administrator' => 'required|string|max:255',
+            'asset_owner' => 'required|string|max:255',
+            'asset_user' => 'required|string|max:255',
             'place' => 'required|max:255',
             'asset_code' => 'required|max:255',
             'asset_name' => 'required|max:255',
@@ -183,7 +176,8 @@ class AssetController extends Controller
     public function assetEdit(Request $request, $asset_id)
     {
         $request->validate([
-            'administrator' => 'required|string|max:255',
+            'asset_owner' => 'required|string|max:255',
+            'asset_user' => 'required|string|max:255',
             'place' => 'required|max:255',
             'asset_code' => 'required|max:255',
             'asset_name' => 'required|max:255',
@@ -248,7 +242,7 @@ class AssetController extends Controller
         for ($i = 1; $i <= $lastAssetId; $i++) {
             for ($parentIdCount = 1; $parentIdCount <= count($haveChildrenAssetIdArray); $parentIdCount++) {
                 if(in_array($i, $haveChildrenAssetIdArray)) {
-                    // dd($parentIdArray);
+                    dd($parentIdArray);
                     goto firstLoop;
                 }
             }
@@ -282,6 +276,74 @@ class AssetController extends Controller
 
         return redirect('list');
 
+    }
+
+    public function showAssetSearch()
+    {
+        return view('app.assetSearch');
+    }
+
+    public function assetSearch(Request $request)
+    {
+        //dd($request->asset_owner);
+        
+        if ($request->search_conditions == 0) {
+            $result = Asset::orWhere('asset_owner', $request->asset_owner)->orWhere('asset_user', $request->asset_user)->orWhere('place', $request->place)->orWhere('asset_code', $request->asset_code)->orWhere('asset_name', $request->asset_name)->orWhere('acquisition_date', $request->acquisition_date)->orWhere('model', $request->model)->orWhere('number_of_assets', $request->number_of_assets)->orWhere('operational_verification', $request->operational_verification)->get();
+            //$result = $result->toArray();
+        } else if ($request->search_conditions == 1) {
+            $result = Asset::get();
+            // dd($result);
+            if(!empty($request->asset_owner)) {
+                $result = $result->where('asset_owner', $request->asset_owner);
+            }
+            if(!empty($request->asset_user)) {
+                $result = $result->where('asset_user', $request->asset_user);
+            }
+            if(!empty($request->place)) {
+                $result = $result->where('place', $request->place);
+            }
+            if(!empty($request->asset_code)) {
+                $result = $result->where('asset_code', $request->asset_code);
+            }
+            if(!empty($request->asset_name)) {
+                $result = $result->where('asset_name', $request->asset_name);
+            }
+            if(!empty($request->acquisition_date)) {
+                $result = $result->where('acquisition_date', $request->acquisition_date);
+            }
+            if(!empty($request->model)) {
+                $result = $result->where('model', $request->model);
+            }
+            if(!empty($request->number_of_assets)) {
+                $result = $result->where('number_of_assets', $request->number_of_assets);
+            }
+            if(!empty($request->operational_verification)) {
+                $result = $result->where('operational_verification', $request->operational_verification);
+            }
+            
+            $result = $result->toArray();
+            $result = array_merge($result);
+
+        } else {
+            return view('top');
+        }
+
+
+        for ($i = 0; $i < count($result); $i++) {
+            $asset = Asset::where('parent_asset_id', $result[$i]['id'])->first();
+            // dd($result[$i]['id']);
+            if (!empty($asset)) {
+                unset($result[$i]);
+            }
+        }
+
+
+
+        $data = [
+            'assets' => $result
+        ];
+
+        return view('app.list', $data);
     }
 
 }
