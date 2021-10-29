@@ -242,7 +242,7 @@ class AssetController extends Controller
         for ($i = 1; $i <= $lastAssetId; $i++) {
             for ($parentIdCount = 1; $parentIdCount <= count($haveChildrenAssetIdArray); $parentIdCount++) {
                 if(in_array($i, $haveChildrenAssetIdArray)) {
-                    dd($parentIdArray);
+                    // dd($parentIdArray);
                     goto firstLoop;
                 }
             }
@@ -284,12 +284,9 @@ class AssetController extends Controller
     }
 
     public function assetSearch(Request $request)
-    {
-        //dd($request->asset_owner);
-        
+    {        
         if ($request->search_conditions == 0) {
             $result = Asset::orWhere('asset_owner', $request->asset_owner)->orWhere('asset_user', $request->asset_user)->orWhere('place', $request->place)->orWhere('asset_code', $request->asset_code)->orWhere('asset_name', $request->asset_name)->orWhere('acquisition_date', $request->acquisition_date)->orWhere('model', $request->model)->orWhere('number_of_assets', $request->number_of_assets)->orWhere('operational_verification', $request->operational_verification)->get();
-            //$result = $result->toArray();
         } else if ($request->search_conditions == 1) {
             $result = Asset::get();
             // dd($result);
