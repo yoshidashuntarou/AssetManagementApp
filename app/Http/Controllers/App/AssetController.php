@@ -141,17 +141,11 @@ class AssetController extends Controller
             'asset_name' => 'required|max:255',
             'acquisition_date' => 'required|date',
             'model' => 'required|max:255',
-            'number_of_assets' => 'required|numeric',
+            'number_of_assets' => 'required|numeric|min:1',
             'operational_verification' => 'required|max:15'
         ]);
 
-        //変更後のコード（最高の親のparent_asset_idを自分のidにする）
-        // $lastId = Asset::all()->last()->id + 1;
-        // $request['parent_asset_id'] = $lastId;
-
         $request['registered_user_id'] = auth()->id();
-
-
 
         $registeringAsset = new Asset;
         $registeringAsset->create($request->all());
@@ -322,7 +316,7 @@ class AssetController extends Controller
             $result = array_merge($result);
 
         } else {
-            return view('top');
+            return view('list');
         }
 
 
