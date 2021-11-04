@@ -1,6 +1,15 @@
 <a href="/list">一覧に戻る</a>
 <form method="post" action="/asset/register/store">
     @csrf
+
+    @if($errors->any())
+        <ul>
+            @foreach($errors->all() as $error)
+            <li>{{$error}}</li>
+            @endforeach
+        </ul>
+    @endif
+    
     <label for="asset_owner">所有者</label>
     <input name="asset_owner"type="text">
     <br>
