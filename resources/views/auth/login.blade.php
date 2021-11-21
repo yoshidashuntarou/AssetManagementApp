@@ -12,14 +12,14 @@
                 <div class="card-header">{{ __('Login') }}</div>
 <h1>login.blede.php</h1>
                 <div class="card-body">
-                    <form method="POST" action="{{ route('login') }}">
+                    <form method="POST" action="{{ route('login') }}" novalidate>
                         @csrf
 
                         <div class="form-group row">
                             <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
 
                             <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
+                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="" required autocomplete="email" autofocus>@salesio-sp.ac.jp
 
                                 @error('email')
                                     <span class="invalid-feedback" role="alert">
@@ -57,7 +57,7 @@
 
                         <div class="form-group row mb-0">
                             <div class="col-md-8 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
+                                <button type="submit" class="btn btn-primary" onclick="addEmailDomain()">
                                     {{ __('Login') }}
                                 </button>
 
@@ -75,3 +75,12 @@
     </div>
 </div>
 @endsection
+
+<script>
+    function addEmailDomain(){
+        var addedDomainEmail = document.getElementById("email").value
+        addedDomainEmail = addedDomainEmail + "@salesio-sp.ac.jp";
+        document.getElementById("email").value = addedDomainEmail;
+    }
+
+</script>

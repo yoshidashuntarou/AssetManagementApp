@@ -9,7 +9,7 @@
                 <h1>register.blade.php</h1>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('register') }}">
+                    <form method="POST" action="{{ route('register') }}" novalidate>
                         @csrf
 
                         <div class="form-group row">
@@ -38,7 +38,7 @@
                             <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
 
                             <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
+                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="" required autocomplete="email">@salesio-sp.ac.jp
 
                                 @error('email')
                                     <span class="invalid-feedback" role="alert">
@@ -72,9 +72,10 @@
 
                         <div class="form-group row mb-0">
                             <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
+                                <button id="register" type="submit" class="btn btn-primary" onclick="addEmailDomain()">
                                     {{ __('Register') }}
                                 </button>
+                                
                             </div>
                         </div>
                     </form>
@@ -84,3 +85,12 @@
     </div>
 </div>
 @endsection
+
+<script>
+    function addEmailDomain(){
+        var addedDomainEmail = document.getElementById("email").value
+        addedDomainEmail = addedDomainEmail + "@salesio-sp.ac.jp";
+        document.getElementById("email").value = addedDomainEmail;
+    }
+
+</script>
